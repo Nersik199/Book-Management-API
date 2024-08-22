@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Profile</title>
+		<link rel="stylesheet" href="/stylesheets/style.css" />
+	</head>
+	<body>
+		<div class="profile-container">
+			<h1 class="profile-title">Your Profile</h1>
+			<div id="profile-data" class="profile-data"></div>
+			<a href="http://localhost:3000/users/profile/data" class="profile-link"
+				>Users List</a
+			>
+			<a
+				href="http://localhost:3000/users/updateUserProfile"
+				class="profile-link"
+				>Update Profile</a
+			>
+			<a href="http://localhost:3000/cinema/showReservation" class="post-create"
+				>cinema</a
+			>
+
+			<a href="http://localhost:3000/users/login" class="profile-link logout"
+				>log out</a
+			>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script src="/javascripts/profile.js"></script>
+	</body>
+</html>
