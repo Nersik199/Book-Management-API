@@ -1,103 +1,101 @@
-import usersModel from '../models/db.Users.js'
-import utils from '../utils/utils.js'
+import utils from '../utils/utils.js';
+import Users from '../models/Users.js';
 
 export default {
 	async registration(req, res) {
 		try {
-			const { firstName, lastName, email, password, phone } = req.body
+			const { firstName, lastName, email, password, phone } = req.body;
 
-			const mailExists = await usersModel.findByEmail(email)
+			const mailExists = await Users.findOne({ where: { email } });
 
 			if (mailExists) {
-				res.status(409).json({ message: 'Email already exists' })
-				return
+				res.status(409).json({ message: 'Email already exists' });
+				return;
 			}
 
-			const user = await usersModel.createUser({
+			const user = await Users.create({
 				firstName,
 				lastName,
-				email,
+				email: email.toLowerCase(),
 				phone,
 				password: utils.hashPassword(password),
-			})
-			delete user.password
-			res.status(201).json({ message: 'User created successfully' })
+			});
+
+			res.status(201).json({ message: 'User created successfully' });
 		} catch (e) {
-			res.status(500).json({ message: e.message })
+			res.status(500).json({ message: e.message });
 		}
 	},
 
 	async login(req, res) {
 		try {
-			const { email, password } = req.body
+			const { email, password } = req.body;
 
-			const user = await usersModel.findByEmail(email)
+			const user = await Users.findOne({ where: { email } });
 
 			if (!user || utils.hashPassword(password) !== user.password) {
-				res.status(401).json({ message: 'Invalid email or password' })
-				return
+				res.status(401).json({ message: 'Invalid email or password' });
+				return;
 			}
 
-			const token = utils.createToken(user.email, user.id)
+			const payload = {
+				id: user.id,
+				email: user.email,
+			};
 
-			res.status(200).json({ message: 'Login successful', token })
+			const token = utils.createToken(payload);
+
+			if (user.type === 'admin') {
+				res
+					.status(200)
+					.json({ message: 'Login successful', token, isAdmin: true });
+				return;
+			}
+
+			res
+				.status(200)
+				.json({ message: 'Login successful', token, isAdmin: false });
 		} catch (error) {
-			console.error('Error executing query:', error)
+			console.error('Error executing query:', error);
 			res
 				.status(500)
-				.json({ message: 'Internal server error', error: error.message })
-		}
-	},
-	async getUsers(req, res) {
-		try {
-			const data = await usersModel.getUsers()
-			if (!data) {
-				res.status(404).json({ message: 'Users not found' })
-				return
-			}
-
-			res.status(200).json({
-				usersList: data,
-			})
-		} catch (error) {
-			console.error('Error executing query', error)
-			res.status(500).json({ message: 'Internal server error' })
+				.json({ message: 'Internal server error', error: error.message });
 		}
 	},
 
-	async getUserProfile(req, res) {
+	async userProfile(req, res) {
 		try {
-			const { email, id } = req.user
+			const { email, id } = req.user;
 
 			if (!email) {
-				res.status(400).json({ message: 'Email not found in token' })
-				return
+				res.status(400).json({ message: 'Email not found in token' });
+				return;
 			}
 
-			const user = await usersModel.findByPk(id)
+			const user = await Users.findByPk(id);
 
 			if (!user) {
-				res.status(404).json({ message: 'User not found' })
-				return
+				res.status(404).json({ message: 'User not found' });
+				return;
 			}
-			res.status(200).json({ user })
+			res.status(200).json({ user });
 		} catch (e) {
-			console.error('Error fetching user profile:', e)
-			res.status(500).json({ message: e.message, status: 500 })
+			console.error('Error fetching user profile:', e);
+			res.status(500).json({ message: e.message, status: 500 });
 		}
 	},
 	async userUpdate(req, res) {
 		try {
-			const { id } = req.user
-			const { firstName, lastName } = req.body
+			const { id } = req.user;
+			const { firstName, lastName } = req.body;
 
-			const user = await usersModel.findByPk(id)
+			const user = await Users.findByPk(id);
 
 			if (!user) {
 				res.status(404).json({
 					message: 'User not found',
-				})
-				return
+				});
+				return;
 			}
 
 			const updatedData = {
@@ -105,39 +103,18 @@ export default {
 				lastName,
 				email: user.email,
 				id,
-			}
+			};
 
-			await usersModel.updateUser(updatedData)
+			await Users.update(updatedData, { where: { id } });
 
 			res.status(200).json({
 				status: 'User updated successfully',
-			})
+			});
 		} catch (error) {
-			console.error('Error updating user profile:', error)
+			console.error('Error updating user profile:', error);
 			res.status(500).json({
 				message: 'Internal server error',
-			})
+			});
 		}
 	},
-	async deleteUser(req, res) {
-		try {
-			const { id } = req.params
-
-			if (!id) {
-				res.status(400).json({ message: 'User ID is required' })
-				return
-			}
-
-			const result = await usersModel.deleteUser(id)
-
-			if (result.affectedRows === 0) {
-				res.status(404).json({ message: 'User not found' })
-				return
-			}
-
-			res.status(200).json({ message: 'User deleted successfully' })
-		} catch (error) {
-			res.status(500).json({ message: error.message, status: 500 })
-		}
-	},
-}
+};

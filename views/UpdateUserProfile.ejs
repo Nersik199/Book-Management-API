@@ -5,11 +5,12 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Update User Profile</title>
 		<link rel="stylesheet" href="/stylesheets/style.css" />
+		<link rel="icon" href="/favicon-32x32.png" />
 	</head>
 	<body class="body">
-		<a class="back" href="http://localhost:3000/users/profile">Back</a>
 		<div class="container-update">
-			<h1 class="update-title">Update User Profile</h1>
+			<a class="back" href="http://localhost:3000/users/profile">Back</a>
+			<h1 class="update-tilte">Update User Profile</h1>
 			<form id="update-profile-form">
 				<div class="update-form-group">
 					<label for="firstName">First Name:</label>
@@ -21,6 +22,7 @@
 					<input type="text" id="lastName" name="lastName" required />
 					<span id="lastName-error" class="error"></span>
 				</div>
+
 				<div class="update-form-group">
 					<button type="submit">Update Profile</button>
 				</div>

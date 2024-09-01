@@ -1,30 +1,30 @@
-const token = localStorage.getItem('token')
+const token = localStorage.getItem('token');
 
 const showUsersList = async () => {
 	if (!token) {
-		alert('No token found. Please login first.')
-		location.href = '/users/login'
-		return
+		alert('No token found. Please login first.');
+		location.href = '/users/login';
+		return;
 	}
 
 	try {
-		const response = await axios.get('/users/getUsersList', {
+		const response = await axios.get('/admin/users/list', {
 			headers: {
-				'x-token': token,
+				authorization: token,
 			},
-		})
+		});
 
-		console.log(response.data)
+		console.log(response.data);
 
-		const usersList = response.data.usersList
-		const usersListElement = document.querySelector('#users-list')
+		const usersList = response.data.usersList;
+		const usersListElement = document.querySelector('#users-list');
 
 		if (usersList && usersList.length > 0) {
-			usersListElement.innerHTML = ''
+			usersListElement.innerHTML = '';
 
 			usersList.forEach(user => {
-				const userItem = document.createElement('li')
-				userItem.className = 'user-item'
+				const userItem = document.createElement('li');
+				userItem.className = 'user-item';
 				userItem.innerHTML = `
                             <h2>${user.firstName} ${user.lastName}</h2>
                             <p>Email: ${user.email}</p>
@@ -35,46 +35,46 @@ const showUsersList = async () => {
                             <button class="delete-button" data-id="${
 															user.id
 														}">Delete</button>
-                        `
-				usersListElement.append(userItem)
-			})
+                        `;
+				usersListElement.append(userItem);
+			});
 
 			document.querySelectorAll('.delete-button').forEach(button => {
 				button.addEventListener('click', async () => {
-					const userId = button.getAttribute('data-id')
+					const userId = button.getAttribute('data-id');
 
 					try {
 						const deleteResponse = await axios.delete(
-							`/users/deleteUser/${userId}`,
+							`/admin/delete/user/${userId}`,
 							{
 								headers: {
-									'x-token': token,
+									authorization: token,
 								},
 							}
-						)
+						);
 
 						if (deleteResponse.status === 200) {
-							button.parentElement.remove()
-							alert('User deleted successfully!')
+							button.parentElement.remove();
+							alert('User deleted successfully!');
 						} else {
 							usersListElement.innerHTML =
-								'<p class="error">Failed to delete user.</p>'
+								'<p class="error">Failed to delete user.</p>';
 						}
 					} catch (error) {
-						console.error('Error deleting user:', error)
+						console.error('Error deleting user:', error);
 						usersListElement.innerHTML =
-							'<p class="error">An error occurred while deleting the user.</p>'
+							'<p class="error">An error occurred while deleting the user.</p>';
 					}
-				})
-			})
+				});
+			});
 		} else {
-			usersListElement.innerHTML = '<p class="error">No users found.</p>'
+			usersListElement.innerHTML = '<p class="error">No users found.</p>';
 		}
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 		usersListElement.innerHTML =
-			'<p class="error">Failed to load users. Please try again later.</p>'
+			'<p class="error">Failed to load users. Please try again later.</p>';
 	}
-}
+};
 
-showUsersList()
+showUsersList();

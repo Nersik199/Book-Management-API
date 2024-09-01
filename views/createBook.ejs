@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>book</title>
+		<link rel="stylesheet" href="/stylesheets/main.css" />
+		<link rel="icon" href="/favicon-32x32.png" />
+	</head>
+	<body>
+		<div class="container">
+			<h1>Create Book</h1>
+
+			<div class="books-create">
+				<form class="create-book">
+					<a class="back" href="http://localhost:3000/users/profile">Back</a>
+					<label for="title">Title</label><br />
+					<input type="text" name="title" id="title" /> <br />
+					<span id="title-error" style="text-align: center"></span>
+					<label for="author">Author</label><br />
+					<input type="text" name="author" id="author" /><br />
+					<select id="category" name="category">
+						<option value="technology">Технология</option>
+						<option value="science">Наука</option>
+						<option value="art">Искусство</option>
+						<option value="education">Образование</option>
+					</select>
+					<span id="author-error" style="text-align: center"></span>
+					<input type="submit" class="button-10" value="Create" />
+				</form>
+			</div>
+		</div>
+	</body>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="/javascripts/createBook.js"></script>
+</html>

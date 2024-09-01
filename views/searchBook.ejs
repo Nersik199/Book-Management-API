@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		<div class="container">
+			<h1>search</h1>
+			<a href="http://localhost:3000/users/profile" class="back"> Back</a>
+			<input
+				type="text"
+				id="search"
+				style="margin-top: 15px"
+				placeholder="search"
+			/>
+			<div id="results"></div>
+			<div id="get-search-book"></div>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script src="/javascripts/searchBook.js"></script>
+	</body>
+</html>

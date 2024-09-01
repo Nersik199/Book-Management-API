@@ -1,46 +1,45 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import controllers from '../controllers/controllers.Users.js'
+import controllers from '../controllers/controllers.Users.js';
 
-import checkToken from '../middleware/checkToken.js'
-import validate from '../middleware/validate.js'
+import checkToken from '../middleware/checkToken.js';
+import validate from '../middleware/validate.js';
 
-import userSchema from '../schemas/users.js'
+import userSchema from '../schemas/users.js';
 
-const router = Router()
+const router = Router();
 
 //views
 router.get('/registration', (req, res) => {
-	res.render('registration')
-})
+	res.render('registration');
+});
 router.get('/login', (req, res) => {
-	res.render('login')
-})
+	res.render('login');
+});
 router.get('/profile', (req, res) => {
-	res.render('profile')
-})
+	res.render('profile');
+});
 router.get('/profile/data', (req, res) => {
-	res.render('usersList')
-})
-router.get('/updateUserProfile', (req, res) => {
-	res.render('showUpdateUserProfile')
-})
+	res.render('usersList');
+});
+router.get('/update/user/profile', (req, res) => {
+	res.render('UpdateUserProfile');
+});
 
 //Api
-
 router.post(
 	'/registration',
 	validate(userSchema.register, 'body'),
 	controllers.registration
-)
-router.post('/login', validate(userSchema.login, 'body'), controllers.login)
-router.get('/getUsersList', checkToken, controllers.getUsers)
-router.get('/getUserProfile', checkToken, controllers.getUserProfile)
+);
+router.post('/login', validate(userSchema.login, 'body'), controllers.login);
+
+router.get('/user/profile', checkToken, controllers.userProfile);
 router.put(
-	'/updateUserProfile',
+	'/update/user/profile',
 	checkToken,
 	validate(userSchema.userUpdate, 'body'),
 	controllers.userUpdate
-)
-router.delete('/deleteUser/:id', checkToken, controllers.deleteUser)
-export default router
+);
+
+export default router;

@@ -1,5 +1,0 @@
-
-
-
-
-# Nersik_Militosyan
