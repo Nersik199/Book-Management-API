@@ -1,7 +1,12 @@
 import sequelize from '../clients/sequelize.mysql.js';
 import { DataTypes, Model } from 'sequelize';
-
-class Users extends Model {}
+import md5 from 'md5';
+const { USER_PASSWORD_SECRET } = process.env;
+class Users extends Model {
+	static hashPassword(password) {
+		return md5(md5(password) + USER_PASSWORD_SECRET);
+	}
+}
 
 Users.init(
 	{
@@ -21,6 +26,12 @@ Users.init(
 		password: {
 			type: DataTypes.STRING(255),
 			allowNull: false,
+			get() {
+				return undefined;
+			},
+			set(value) {
+				this.setDataValue('password', Users.hashPassword(value));
+			},
 		},
 		email: {
 			type: DataTypes.STRING(255),

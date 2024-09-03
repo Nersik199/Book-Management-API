@@ -1,6 +1,8 @@
 import Book from '../models/Book.js';
+import Review from '../models/Review.js';
 import Favorite from '../models/Favorite.js';
-import { Op } from 'sequelize';
+
+import { Op, Sequelize } from 'sequelize';
 export default {
 	createBook: async (req, res) => {
 		try {
@@ -25,6 +27,66 @@ export default {
 				return;
 			}
 			res.status(200).json({ books });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: error.message });
+		}
+	},
+	getTopRated: async (req, res) => {
+		try {
+			const { page = 1, limit = 5 } = req.query;
+			const offset = Math.floor((page - 1) * limit);
+
+			const books = await Review.findAll({
+				attributes: [
+					[Sequelize.fn('AVG', Sequelize.col('rating')), 'bookRating'],
+				],
+				include: [
+					{
+						model: Book,
+						attributes: ['id', 'title', 'author', 'category'],
+					},
+				],
+				group: ['bookId'],
+				order: [[Sequelize.literal('bookRating'), 'DESC']],
+				limit,
+				offset,
+			});
+
+			if (!books) {
+				res.status(404).json({ message: 'Books not found' });
+				return;
+			}
+
+			res.status(200).json({ message: 'Top Rated Books', books });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: error.message });
+		}
+	},
+
+	getAuthorCount: async (req, res) => {
+		try {
+			const { page = 1, limit = 5 } = req.query;
+			const offset = Math.floor((page - 1) * limit);
+
+			const authors = await Book.findAll({
+				attributes: [
+					'author',
+					[Sequelize.fn('COUNT', Sequelize.col('userId')), 'bookCount'],
+				],
+
+				group: ['author'],
+				order: [[Sequelize.literal('bookCount'), 'DESC']],
+				limit,
+				offset,
+			});
+			if (!authors) {
+				res.status(404).json({ message: 'Authors not found' });
+				return;
+			}
+
+			res.status(200).json({ message: 'Top Authors', authors });
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: error.message });
@@ -67,7 +129,6 @@ export default {
 			res.status(500).json({ error: error.message });
 		}
 	},
-
 	deleteFavorite: async (req, res) => {
 		try {
 			const { id: userId } = req.user;
@@ -115,7 +176,6 @@ export default {
 			res.status(500).json({ error: error.message });
 		}
 	},
-
 	showBook: async (req, res) => {
 		try {
 			const { id } = req.params;

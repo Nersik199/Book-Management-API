@@ -26,9 +26,13 @@ router.post(
 	controllers.createBook
 );
 router.get('/show/books', checkToken, controllers.getBook);
-router.get('/show/favorites', checkToken, controllers.getFavorite);
 router.get('/search', checkToken, controllers.bookSearch);
 router.get('/show/:id', checkToken, controllers.showBook);
+
+router.get('/top-rated', checkToken, controllers.getTopRated);
+router.get('/authors/book-count', checkToken, controllers.getAuthorCount);
+
+router.get('/show/favorites', checkToken, controllers.getFavorite);
 router.post('/:id/favorite', checkToken, controllers.createFavorite);
 router.delete('/:id/favorite', checkToken, controllers.deleteFavorite);
 export default router;

@@ -1,5 +1,8 @@
 import utils from '../utils/utils.js';
 import Users from '../models/Users.js';
+import { Sequelize } from 'sequelize';
+import Review from '../models/Review.js';
+import Book from '../models/Book.js';
 
 export default {
 	async registration(req, res) {
@@ -18,7 +21,7 @@ export default {
 				lastName,
 				email: email.toLowerCase(),
 				phone,
-				password: utils.hashPassword(password),
+				password: password,
 			});
 
 			res.status(201).json({ message: 'User created successfully' });
@@ -33,7 +36,10 @@ export default {
 
 			const user = await Users.findOne({ where: { email } });
 
-			if (!user || utils.hashPassword(password) !== user.password) {
+			if (
+				!user ||
+				Users.hashPassword(password) !== user.getDataValue('password')
+			) {
 				res.status(401).json({ message: 'Invalid email or password' });
 				return;
 			}
@@ -115,6 +121,87 @@ export default {
 			res.status(500).json({
 				message: 'Internal server error',
 			});
+		}
+	},
+	async userRatingsBook(req, res) {
+		try {
+			const { page = 1, limit = 5 } = req.query;
+			const offset = Math.floor((page - 1) * limit);
+
+			const { userId } = req.params;
+
+			const user = await Users.findByPk(userId);
+
+			if (!user) {
+				res.status(404).json({ message: 'User not found' });
+				return;
+			}
+
+			const userReviews = await Review.findAll({
+				attributes: [
+					[Sequelize.fn('AVG', Sequelize.col('rating')), 'userRating'],
+				],
+				include: [
+					{
+						model: Users,
+						attributes: ['id', 'firstName', 'lastName'],
+					},
+					{
+						model: Book,
+						attributes: ['id', 'title', 'author', 'category'],
+					},
+				],
+				group: ['bookId'],
+				order: [[Sequelize.literal('userRating'), 'DESC']],
+				where: { userId },
+				limit,
+				offset,
+			});
+
+			res.status(200).json({
+				message: 'Reviews fetched successfully',
+				summary: userReviews,
+			});
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ message: 'Internal server error' });
+		}
+	},
+
+	async mostActiveUsers(req, res) {
+		try {
+			const { page = 1, limit = 5 } = req.query;
+			const offset = Math.floor((page - 1) * limit);
+
+			const mostActive = await Review.findAll({
+				attributes: [
+					[Sequelize.fn('COUNT', Sequelize.col('userId')), 'reviews'],
+					[Sequelize.fn('AVG', Sequelize.col('rating')), 'rating'],
+				],
+				include: [
+					{
+						model: Users,
+						attributes: ['id', 'firstName', 'lastName'],
+					},
+				],
+				group: ['userId'],
+				order: [[Sequelize.literal('reviews'), 'DESC']],
+				limit,
+				offset,
+			});
+
+			if (!mostActive) {
+				res.status(404).json({ message: 'No reviews found' });
+				return;
+			}
+
+			res.status(200).json({
+				message: 'Reviews fetched successfully',
+				mostActive,
+			});
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ message: 'Internal server error' });
 		}
 	},
 };

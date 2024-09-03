@@ -33,8 +33,9 @@ router.post(
 	controllers.registration
 );
 router.post('/login', validate(userSchema.login, 'body'), controllers.login);
-
 router.get('/user/profile', checkToken, controllers.userProfile);
+router.get('/:userId/review-summary', checkToken, controllers.userRatingsBook);
+router.get('/most-active', checkToken, controllers.mostActiveUsers);
 router.put(
 	'/update/user/profile',
 	checkToken,
