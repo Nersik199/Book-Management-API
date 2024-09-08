@@ -4,6 +4,7 @@ import controllers from '../controllers/controllers.Users.js';
 
 import checkToken from '../middleware/checkToken.js';
 import validate from '../middleware/validate.js';
+import checkFile from '../middleware/checkFile.js';
 
 import userSchema from '../schemas/users.js';
 
@@ -29,6 +30,7 @@ router.get('/update/user/profile', (req, res) => {
 //Api
 router.post(
 	'/registration',
+	checkFile('public/images/avatar').single('avatar'),
 	validate(userSchema.register, 'body'),
 	controllers.registration
 );
@@ -39,6 +41,7 @@ router.get('/most-active', checkToken, controllers.mostActiveUsers);
 router.put(
 	'/update/user/profile',
 	checkToken,
+	checkFile('public/images/avatar').single('avatar'),
 	validate(userSchema.userUpdate, 'body'),
 	controllers.userUpdate
 );

@@ -29,14 +29,18 @@ Favorite.init(
 
 Favorite.belongsTo(User, {
 	foreignKey: 'userId',
+	onDelete: 'cascade',
 });
 Favorite.belongsTo(Book, {
 	foreignKey: 'bookId',
+	onDelete: 'cascade',
 });
 User.hasMany(Favorite, {
 	foreignKey: 'userId',
+	onDelete: 'cascade',
 });
 Book.hasMany(Favorite, {
 	foreignKey: 'bookId',
+	onDelete: 'cascade',
 });
 export default Favorite;

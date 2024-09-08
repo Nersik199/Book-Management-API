@@ -23,7 +23,9 @@ Book.init(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-
+		image: {
+			type: DataTypes.STRING,
+		},
 		userId: {
 			type: DataTypes.BIGINT.UNSIGNED,
 			allowNull: false,
@@ -38,6 +40,6 @@ Book.init(
 );
 
 Book.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
-User.hasMany(Book, { foreignKey: 'userId' });
+User.hasMany(Book, { foreignKey: 'userId', onDelete: 'cascade' });
 
 export default Book;

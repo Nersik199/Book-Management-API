@@ -30,8 +30,8 @@ Review.init(
 	}
 );
 
-Review.belongsTo(User, { foreignKey: 'userId' });
-Review.belongsTo(Book, { foreignKey: 'bookId' });
-User.hasMany(Review, { foreignKey: 'userId' });
-Book.hasMany(Review, { foreignKey: 'bookId' });
+Review.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
+Review.belongsTo(Book, { foreignKey: 'bookId', onDelete: 'cascade' });
+User.hasMany(Review, { foreignKey: 'userId', onDelete: 'cascade' });
+Book.hasMany(Review, { foreignKey: 'bookId', onDelete: 'cascade' });
 export default Review;

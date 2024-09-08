@@ -2,6 +2,8 @@ import Book from '../models/Book.js';
 import Review from '../models/Review.js';
 import Users from '../models/Users.js';
 
+import utils from '../utils/utils.js';
+
 export default {
 	getBooks: async (req, res) => {
 		try {
@@ -32,8 +34,8 @@ export default {
 			const offset = (page - 1) * limit;
 			const data = await Users.findAll({
 				raw: true,
-				limit,
-				offset,
+				// limit,
+				// offset,
 			});
 
 			if (!data) {
@@ -67,6 +69,9 @@ export default {
 				res.status(400).json({ message: 'Users ID is required' });
 				return;
 			}
+
+			const user = await Users.findByPk(id);
+			await utils.deleteFileImage(user.avatar);
 
 			const result = await Users.destroy({ where: { id }, raw: true });
 

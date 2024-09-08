@@ -9,7 +9,9 @@ form.addEventListener('submit', async event => {
 		lastName: document.getElementById('lastName').value,
 		email: document.getElementById('email').value,
 		password: document.getElementById('password').value,
+		// avatar: document.getElementById('file').value,
 	};
+	console.log(data);
 
 	document.querySelectorAll('.error').forEach(span => {
 		span.textContent = '';

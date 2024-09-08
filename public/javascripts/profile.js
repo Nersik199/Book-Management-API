@@ -17,9 +17,12 @@ const usersProfile = async () => {
 
 		const user = response.data.user;
 		const profileData = document.querySelector('#profile-data');
-
+		if (user.avatar === null) {
+			user.avatar = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+		}
 		if (user) {
 			profileData.innerHTML = `
+						<img src="${user.avatar}" class="avatar" alt="Profile Picture">
             <h2>${user.firstName} ${user.lastName}</h2>
             <p>Email: ${user.email}</p>
             <p>Joined: ${new Date(user.createdAt).toLocaleDateString()}</p>

@@ -1,14 +1,27 @@
+import { Op, Sequelize } from 'sequelize';
+
+import Users from '../models/Users.js';
 import Book from '../models/Book.js';
 import Review from '../models/Review.js';
 import Favorite from '../models/Favorite.js';
 
-import { Op, Sequelize } from 'sequelize';
+import utils from '../utils/utils.js';
+
 export default {
 	createBook: async (req, res) => {
 		try {
 			const { id: userId } = req.user;
 			const { title, author, category } = req.body;
-			const book = await Book.create({ title, author, category, userId });
+
+			const image = await utils.processFilePath(req.file);
+
+			const book = await Book.create({
+				title,
+				author,
+				category,
+				userId,
+				image,
+			});
 			res.status(201).json({ message: 'Book created successfully', book });
 		} catch (error) {
 			console.error(error);
@@ -17,8 +30,7 @@ export default {
 	},
 	getBook: async (req, res) => {
 		try {
-			const limit = 5;
-			const { page = 1 } = req.query;
+			const { page = 1, limit = 5 } = req.query;
 			const offset = (page - 1) * limit;
 			const books = await Book.findAll({ include: ['user'], limit, offset });
 
@@ -32,6 +44,55 @@ export default {
 			res.status(500).json({ error: error.message });
 		}
 	},
+
+	updateBook: async (req, res) => {
+		try {
+			const { id: userId } = req.user;
+			const { id } = req.params;
+			const { title, author, category } = req.body;
+
+			const book = await Book.findByPk(id);
+
+			if (!book) {
+				res.status(404).json({ message: 'Book not found' });
+				return;
+			}
+			const image = await utils.updateFileImage(req.file, book.image);
+
+			const result = await book.update(
+				{
+					title,
+					author,
+					category,
+					image,
+				},
+				{ where: { userId } }
+			);
+			res.status(200).json({ message: 'Book updated successfully', result });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: error.message });
+		}
+	},
+
+	deleteBook: async (req, res) => {
+		try {
+			const { id: userId } = req.user;
+			const { id } = req.params;
+			const book = await Book.findByPk(id);
+			if (!book) {
+				res.status(404).json({ message: 'Book not found' });
+				return;
+			}
+			await utils.deleteFileImage(book.image);
+			await book.destroy({ where: { userId } });
+			res.status(200).json({ message: 'Book deleted successfully' });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: error.message });
+		}
+	},
+
 	getTopRated: async (req, res) => {
 		try {
 			const { page = 1, limit = 5 } = req.query;
@@ -64,7 +125,6 @@ export default {
 			res.status(500).json({ error: error.message });
 		}
 	},
-
 	getAuthorCount: async (req, res) => {
 		try {
 			const { page = 1, limit = 5 } = req.query;
@@ -111,6 +171,7 @@ export default {
 			const { page = 1 } = req.query;
 			const offset = (page - 1) * limit;
 			const { id: userId } = req.user;
+			console.log(userId);
 
 			const favorites = await Favorite.findAll({
 				where: { userId },
@@ -125,6 +186,8 @@ export default {
 			}
 			res.status(200).json({ favorites });
 		} catch (error) {
+			console.log(error);
+
 			console.error(error);
 			res.status(500).json({ error: error.message });
 		}

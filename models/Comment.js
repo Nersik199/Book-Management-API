@@ -25,9 +25,9 @@ Comment.init(
 	}
 );
 
-Comment.belongsTo(User, { foreignKey: 'userId' });
-Comment.belongsTo(Review, { foreignKey: 'reviewId' });
-User.hasMany(Comment, { foreignKey: 'userId' });
-Review.hasMany(Comment, { foreignKey: 'reviewId' });
+Comment.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
+Comment.belongsTo(Review, { foreignKey: 'reviewId', onDelete: 'cascade' });
+User.hasMany(Comment, { foreignKey: 'userId', onDelete: 'cascade' });
+Review.hasMany(Comment, { foreignKey: 'reviewId', onDelete: 'cascade' });
 
 export default Comment;

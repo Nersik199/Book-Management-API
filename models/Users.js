@@ -41,6 +41,9 @@ Users.init(
 			type: DataTypes.DATE,
 			defaultValue: DataTypes.NOW,
 		},
+		avatar: {
+			type: DataTypes.STRING,
+		},
 		type: {
 			type: DataTypes.ENUM('user', 'admin'),
 			allowNull: false,

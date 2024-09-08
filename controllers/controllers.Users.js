@@ -1,15 +1,18 @@
+import { Sequelize } from 'sequelize';
+
 import utils from '../utils/utils.js';
 import Users from '../models/Users.js';
-import { Sequelize } from 'sequelize';
 import Review from '../models/Review.js';
 import Book from '../models/Book.js';
 
 export default {
 	async registration(req, res) {
 		try {
-			const { firstName, lastName, email, password, phone } = req.body;
+			const { firstName, lastName, email, password } = req.body;
 
 			const mailExists = await Users.findOne({ where: { email } });
+
+			const image = await utils.processFilePath(req.file);
 
 			if (mailExists) {
 				res.status(409).json({ message: 'Email already exists' });
@@ -20,12 +23,14 @@ export default {
 				firstName,
 				lastName,
 				email: email.toLowerCase(),
-				phone,
 				password: password,
+				avatar: image,
 			});
 
-			res.status(201).json({ message: 'User created successfully' });
+			res.status(201).json({ message: 'User created successfully', user });
 		} catch (e) {
+			console.log(e);
+
 			res.status(500).json({ message: e.message });
 		}
 	},
@@ -62,7 +67,8 @@ export default {
 				.status(200)
 				.json({ message: 'Login successful', token, isAdmin: false });
 		} catch (error) {
-			console.error('Error executing query:', error);
+			console.log(error);
+
 			res
 				.status(500)
 				.json({ message: 'Internal server error', error: error.message });
@@ -103,18 +109,21 @@ export default {
 				});
 				return;
 			}
+			const image = await utils.updateFileImage(req.file, user.avatar);
 
-			const updatedData = {
-				firstName,
-				lastName,
-				email: user.email,
-				id,
-			};
-
-			await Users.update(updatedData, { where: { id } });
+			await Users.update(
+				{
+					firstName,
+					lastName,
+					email: user.email,
+					id,
+					avatar: image,
+				},
+				{ where: { id } }
+			);
 
 			res.status(200).json({
-				status: 'User updated successfully',
+				message: 'User updated successfully',
 			});
 		} catch (error) {
 			console.error('Error updating user profile:', error);

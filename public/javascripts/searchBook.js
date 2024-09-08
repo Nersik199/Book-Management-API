@@ -53,6 +53,8 @@ async function openSearch(bookId) {
 
 		info.className = 'info';
 		info.innerHTML = `
+
+		<img src="${books.image}" class="book-cover" alt="Book Cover">
 		<p>book title: ${books.title}</p>
 		<p>author: ${books.author}</p>
 		<p>category: ${books.category}</p>

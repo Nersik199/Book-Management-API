@@ -16,9 +16,15 @@ async function getBooks() {
 		console.log(books);
 
 		books.forEach(async book => {
+			if (book.image === null) {
+				book.image =
+					'https://cdn.pixabay.com/photo/2024/01/25/10/50/mosque-8531576_1280.jpg';
+			}
+
 			const containerBook = document.createElement('div');
 			containerBook.className = 'book';
 			containerBook.innerHTML = `
+			<img src="${book.image}" class="book-cover" alt="Book Cover">
 		        <h3> ${book.title}</h3>
 		        <p> author: ${book.author}</p>
 						<p>category: ${book.category}</p>

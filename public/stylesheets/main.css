@@ -6,7 +6,7 @@
 
 body {
 	font-family: Arial, Helvetica, sans-serif;
-	background-color: lightgrey;
+	background-color: #333 !important;
 }
 .container {
 	width: 100%;
@@ -41,6 +41,12 @@ h1 {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	border-radius: 8px;
 	overflow: hidden;
+}
+.book-cover {
+	width: 150px;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 8px;
 }
 
 .modal {
